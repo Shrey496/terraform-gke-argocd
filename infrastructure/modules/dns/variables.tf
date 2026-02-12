@@ -3,6 +3,6 @@ variable "project_id" {
 }
 
 variable "domain_name" {
-  description = "The root domain (e.g. shrey-platform.com)"
+  description = "The root domain"
   type        = string
 }
