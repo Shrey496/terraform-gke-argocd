@@ -1,7 +1,7 @@
 output "cluster_endpoint" {
   description = "Connect to the cluster here"
   value       = module.gke.cluster_endpoint
-  sensitive   = true
+  sensitive   = true    #Public address of the GKE cluster
 }
 
 output "dns_name_servers" {

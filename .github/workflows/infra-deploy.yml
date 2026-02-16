@@ -1,0 +1,102 @@
+name: "Infrastructure Pipeline"
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'infrastructure/**'       # Run if infra code changes
+      - '.github/workflows/**'    # Run if pipeline config changes
+      - '!**.md'                   # Ignore README updates (Notice the !)
+      - '!docs/**'                 # Ignore documentation (Notice the !)
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'infrastructure/**'
+      - '.github/workflows/**'
+      - '!**.md'
+      - '!docs/**'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: ./infrastructure
+
+jobs:
+  # JOB 1: PLAN (Runs on PRs and Main)
+  plan:
+    name: "Terraform Plan"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # AUTHENTICATION
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      # Generates the plan and saves it to a binary file called 'tfplan'
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=tfplan
+        continue-on-error: false
+
+      # ARTIFACT UPLOAD
+      # Saves the 'tfplan' file so the Apply job can download it later
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: infrastructure/tfplan
+          retention-days: 5
+
+  # JOB 2: APPLY (Runs ONLY on Main)
+  apply:
+    name: "Terraform Apply"
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: production        #This links to the GitHub "production" Environment
+    
+    # Only run if we are on the 'main' branch AND it was a push event
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      # DOWNLOAD PLAN
+      # Retrieves the exact plan file generated in the previous job
+      - name: Download Plan Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: infrastructure
+
+      # Applies the saved plan. Note: We don't need input variables here
+      # because they are already baked into the 'tfplan' file.
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
