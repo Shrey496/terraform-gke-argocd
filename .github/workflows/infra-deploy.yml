@@ -68,7 +68,7 @@ jobs:
     name: "Terraform Apply"
     needs: plan
     runs-on: ubuntu-latest
-    environment: production        # <--- This links to the GitHub "production" Environment
+    environment: production        #This links to the GitHub "production" Environment
     
     # Only run if we are on the 'main' branch AND it was a push event
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
