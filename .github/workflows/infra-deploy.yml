@@ -30,8 +30,6 @@ jobs:
   plan:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
-    outputs:
-      exitcode: ${{ steps.plan.outputs.exitcode }}
 
     steps:
       - name: Checkout Code
