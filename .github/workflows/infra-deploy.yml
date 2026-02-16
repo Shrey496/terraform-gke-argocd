@@ -6,17 +6,15 @@ on:
     paths:
       - 'infrastructure/**'       # Run if infra code changes
       - '.github/workflows/**'    # Run if pipeline config changes
-    paths-ignore:
-      - '**.md'                   # Ignore README updates
-      - 'docs/**'                 # Ignore documentation
+      - '!**.md'                   # Ignore README updates (Notice the !)
+      - '!docs/**'                 # Ignore documentation (Notice the !)
   pull_request:
     branches: [ "main" ]
     paths:
       - 'infrastructure/**'
       - '.github/workflows/**'
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
+      - '!**.md'
+      - '!docs/**'
 
 permissions:
   contents: read
