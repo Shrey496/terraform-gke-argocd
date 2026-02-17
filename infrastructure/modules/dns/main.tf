@@ -1,5 +1,5 @@
 resource "google_dns_managed_zone" "platform" {
-  name        = "DNS-gitops-platform-zone"
+  name        = "dns-gitops-platform-zone"
   dns_name    = "${var.domain_name}."
   description = "Managed by Terraform for ${var.domain_name}"
   
