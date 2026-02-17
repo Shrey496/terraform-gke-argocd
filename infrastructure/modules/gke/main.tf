@@ -2,8 +2,8 @@ resource "google_container_cluster" "primary" {
   name     = var.cluster_name
   location = var.zone
   private_cluster_config {
-    enable_private_nodes    = true   # Fixes the Org Policy Error
-    enable_private_endpoint = false  # Allows you to access the cluster from your laptop
+    enable_private_nodes    = true   
+    enable_private_endpoint = false  
     master_ipv4_cidr_block  = "172.16.0.0/28" # Required for private clusters
   }
   network = var.network_name
