@@ -20,3 +20,19 @@ resource "google_compute_subnetwork" "subnet" {
    
   }
 }
+
+#Create a cloud router
+resource "google_compute_router" "router" {
+  name = "${var.cluster_name}-router"
+  region = var.region
+  network = google_compute_network.vpc.id
+}
+
+#Create the Cloud NAT Gateway (provide Internet access to private nodes)
+resource "google_compute_router_nat" "nat" {
+  name = "${var.cluster_name}-nat"
+  router = google_compute_router.router.name
+  region = var.region
+  nat_ip_allocate_option = "AUTO_ONLY"  #Grab an available IP from global pool, use and release IP when NAT is destroyed
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+}
