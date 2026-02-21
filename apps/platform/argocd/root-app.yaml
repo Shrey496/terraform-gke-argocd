@@ -5,6 +5,7 @@ metadata:
   namespace: argocd
 spec:
   # 1. The Source
+  project: default
   source:
     repoURL: 'https://github.com/Shrey496/terraform-gke-argocd.git' # Look at this GitHub repo
     targetRevision: HEAD     # Look at the main branch
