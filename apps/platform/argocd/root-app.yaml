@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-app
+  namespace: argocd
+spec:
+  # 1. The Source
+  source:
+    repoURL: 'https://github.com/Shrey496/terraform-gke-argocd.git' # Look at this GitHub repo
+    targetRevision: HEAD     # Look at the main branch
+    path: apps/platform      # Look specifically inside this folder
+  
+  # 2. The Destination
+  destination:
+    server: 'https://kubernetes.default.svc' # Internal call to the cluster to run this on itself
+    namespace: default                       # Deploy the app in the default namespace
+  
+  # 3. The Sync Policy
+  syncPolicy:
+    automated:
+      prune: true      # Initiate resource deletion when resource is deleted in Github
+      selfHeal: true   # Overwrite manual changes to match GitHub."
