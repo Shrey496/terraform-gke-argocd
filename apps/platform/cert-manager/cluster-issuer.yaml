@@ -8,6 +8,7 @@ spec:
     email: shreyr7@gmail.com
     privateKeySecretRef:
       name: letsencrypt-prod                        #Private key stored in Kubernetes secret 
-    solvers:                                        #Process to prove ownership of the domain
+    solvers:
+    - http01:                                        #Process to prove ownership of the domain
         ingress:
           class: nginx
