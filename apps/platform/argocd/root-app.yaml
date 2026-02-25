@@ -3,13 +3,17 @@ kind: Application
 metadata:
   name: root-app
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   # 1. The Source
   project: default
   source:
     repoURL: 'https://github.com/Shrey496/terraform-gke-argocd.git' # Look at this GitHub repo
     targetRevision: HEAD     # Look at the main branch
-    path: apps/platform      # Look specifically inside this folder
+    path: apps/platform
+    directory:
+      recurse: true          # Read all sub directories within the path
   
   # 2. The Destination
   destination:
