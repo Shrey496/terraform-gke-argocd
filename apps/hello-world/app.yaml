@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: hello-world
-        image: blacktop/2048:latest
+        image: mcreis/coming-soon:latest
         ports:
         - containerPort: 80
 ---
