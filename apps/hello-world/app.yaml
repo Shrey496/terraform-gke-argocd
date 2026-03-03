@@ -19,8 +19,8 @@ spec:
         app: hello-world
     spec:
       containers:
-      - name: hello-world
-        image: alexwhen/docker-2048:latest
+      - name: 2048-game
+        image: gitlab-registration-45.cloud.gitlab.com:5005/vsc-challenges/docker-2048:latest
         ports:
         - containerPort: 80
 ---
