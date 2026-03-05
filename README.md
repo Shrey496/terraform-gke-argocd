@@ -75,8 +75,6 @@ The project strictly separates the Cloud Infrastructure (Terraform) from the Kub
 │   └── README.md
 ```
 
----
-
 ## Phase 1: The Cloud Foundation (Terraform)
 Before GitOps can take over, the physical cloud infrastructure must exist. We use Terraform to provision a secure, private environment. 
 
@@ -86,8 +84,7 @@ Here are the specific GCP resources created and *why* they are necessary:
 
 * **GKE Cluster (Control Plane):** The Google-managed "brain" of Kubernetes. (Note: The `cluster_endpoint` is marked as `sensitive = true` in Terraform outputs as a Defense-in-Depth security measure).
 * **Node Pools:** The underlying Compute Engine virtual machines where your workloads (pods) will actually run.
-
----
+* **Cloud DNS Managed Zone:** Provisions the authoritative zone to host your domain's routing records (which we later map to our NGINX Ingress controller).
 
 ## Architecture & Workflow
 
@@ -107,6 +104,7 @@ graph TD
     subgraph GCP_Cloud ["GCP (Infrastructure)"]
         F[VPC & Cloud NAT]
         G[GKE Cluster Node Pools]
+        N[Cloud DNS Managed Zone]
         
         F -. Provides Network For .-> G
     end
@@ -137,6 +135,7 @@ graph TD
     B --> E
     E -- Provisions --> F
     E -- Provisions --> G
+    E -- Provisions --> N
     G -. Hosts .-> GKE_Cluster
 
     %% Styling
@@ -149,6 +148,7 @@ graph TD
     style M fill:#f9f9f9,stroke:#666,stroke-dasharray: 5 5
     style F fill:#e6e6fa,stroke:#663399
     style G fill:#e6e6fa,stroke:#663399
+    style N fill:#e6e6fa,stroke:#663399
 ```
 
 ### The "App of Apps" Bootstrap (The Domino Effect)
@@ -160,8 +160,6 @@ The entire platform is spun up using a single manual trigger that starts a chain
 
 ### Understanding "App of Apps":
 In a standard setup, you would manually apply 10 different files for 10 different applications. The App of Apps pattern solves this by creating one "Parent" ArgoCD Application (the Root App) whose entire job is just to monitor a folder and deploy "Child" ArgoCD Applications. When the Root App sees a new file, it spawns the child application automatically.
-
----
 
 ## Getting Started
 
@@ -188,7 +186,7 @@ kubectl create namespace argocd
 kubectl apply -n argocd -f [https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml](https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml)
 ```
 
-**The "Domino Effect"**
+#### The "Domino Effect"
 Apply the Root App to kick off the App of Apps automation:
 ```bash
 kubectl apply -f apps/platform/argocd/root-app.yaml
@@ -213,8 +211,6 @@ Because this platform utilizes a single NGINX Load Balancer, we must point our d
 
 Visit your URL in a browser to see your secure, highly-available application live!
 
----
-
 ## Deep Dives & Architecture Decisions (ADRs)
 
 ### 1. Cert-Manager HTTP-01 Challenge Flow
@@ -232,8 +228,6 @@ In the ArgoCD configuration, the destination server is set to `https://kubernete
 ArgoCD is additive by default. To make it delete resources when they are removed from Git, `spec.syncPolicy.automated.prune: true` is explicitly required. 
 * **The Namespace Trap:** If ArgoCD creates a namespace manually via the UI/CLI flag, it won't delete it upon app removal. To fully manage a namespace lifecycle, a `namespaces.yaml` file (as seen in our `nginx-ingress` and `cert-manager` directories) must exist in Git.
 * **Finalizers:** If an app gets stuck in a `Terminating` state, it is usually waiting on an external cloud resource (like a LoadBalancer). Ensuring resources have the `resources-finalizer.argocd.argoproj.io` metadata guarantees ArgoCD cleans up child dependencies before terminating itself.
-
----
 
 ## Troubleshooting & Verification
 
