@@ -34,7 +34,13 @@ resource "google_container_node_pool" "primary_nodes" {
   node_count = 2
 
   node_config {
+    spot         = true         #Spot instance to save on costs.
     machine_type = "e2-standard-4"
     oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+  management {          #Replace, spot VMs with another spot VM to replace the terminated VM
+    auto_repair = true
+    auto_upgrade = true
+
   }
 }
