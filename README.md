@@ -18,7 +18,7 @@ This project automates the five most painful manual tasks that burn out DevOps e
 * **Problem 5: Upgrading fleet-wide cluster add-ons requires running individual Helm commands across dozens of clusters manually.**
   * *Solution (App of Apps Pattern):* By changing a single version number in a Git repository, ArgoCD detects the change and cascades the upgrade across all cluster tools autonomously.
 * **Problem 6: Provisioning this platform on standard e2-.. VMs and letting it run adds up on the cloud cost ovetime.**
- * *Solution (Use Spot VM instances):* Slashed GKE compute costs by ~80% by provisioning Spot Instances for the node pool, relying on the platform's self-healing architecture to seamlessly handle random node preemptions without downtime.
+  * *Solution (Use Spot VM instances):* Slashed GKE compute costs by ~80% by provisioning Spot Instances for the node pool, relying on the platform's self-healing architecture to seamlessly handle random node preemptions without downtime.
 
 ## Prerequisites
 
