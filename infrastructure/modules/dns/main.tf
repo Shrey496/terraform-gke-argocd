@@ -8,7 +8,7 @@
 #   }
 # }
 
-output "name_servers" {
-  description = "Delegate your domain to these nameservers"
-  value       = google_dns_managed_zone.platform.name_servers
-}
+# output "name_servers" {
+#   description = "Delegate your domain to these nameservers"
+#   value       = google_dns_managed_zone.platform.name_servers
+# }
