@@ -4,7 +4,7 @@ output "cluster_endpoint" {
   sensitive   = true    #Public address of the GKE cluster
 }
 
-output "dns_name_servers" {
-  description = "UPDATE YOUR REGISTRAR WITH THESE"
-  value       = module.dns.name_servers
-}
+# output "dns_name_servers" {
+#   description = "UPDATE YOUR REGISTRAR WITH THESE"
+#   value       = module.dns.name_servers
+# }
