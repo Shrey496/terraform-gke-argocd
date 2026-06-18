@@ -22,6 +22,7 @@ module "gke" {
 
 # 3. DNS Layer
 module "dns" {
+  count       = 0 # SET to 0 to temporarily disable; SET to 1 to reactivate
   source      = "./modules/dns"
   project_id  = var.project_id
   domain_name = var.domain_name
